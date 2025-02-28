@@ -186,4 +186,35 @@ class RegularUser(User):
 
 
 class Admin(User):
+  __tablename__ = 'admin'
+  staff_id = db.Column(db.String(120), unique=True)
+  __mapper_args__ = {
+      'polymorphic_identity': 'admin',
+  }
+
+  def get_all_todos_json(self):
+    todos = Todo.query.all()
+    if todos:
+      return [todo.get_json() for todo in todos]
+    else:
+      return []
+    
+  def __init__(self, staff_id, username, email, password):
+    super().__init__(username, email, password)
+    self.staff_id = staff_id
+
+  def get_json(self):
+    return{
+      "id": self.id,
+      "username": self.username,
+      "email": self.email,
+      "staff_id": self.staff_id,
+      "type": self.type
+    }
+  
+  
+  
+  def __repr__(self):
+    return f'<Adimin {self.id} : {self.username} - {self.email}>'
   pass
+
